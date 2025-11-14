@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// 1. Database provider setup
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Yeh .env file se URL lega
+}
+
+// 2. Prisma client generator
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 3. User Roles Enum (Admin, Manager, Sales Executive) [cite: 10]
+enum Role {
+  ADMIN
+  MANAGER
+  SALES_EXECUTIVE
+}
+
+// 4. User Model
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String   // Hashed password
+  name      String?
+  role      Role     @default(SALES_EXECUTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ownedLeads  Lead[]     @relation("LeadOwner")
+  activities  Activity[] @relation("UserActivities")
+}
+
+// 5. Lead Status Enum
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  WON
+  LOST
+}
+
+// 6. Lead Model [cite: 13]
+model Lead {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String?
+  company   String?
+  status    LeadStatus @default(NEW)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relation to User (Owner)
+  ownerId Int
+  owner   User @relation("LeadOwner", fields: [ownerId], references: [id])
+
+  // Relation to Activity Timeline [cite: 14]
+  activities Activity[] @relation("LeadActivities")
+}
+
+// 7. Activity Model (for Timeline) [cite: 14]
+enum ActivityType {
+  NOTE
+  CALL
+  MEETING
+  EMAIL
+  STATUS_CHANGE
+}
+
+model Activity {
+  id        Int          @id @default(autoincrement())
+  type      ActivityType
+  content   String       // Jaise "Called the client" ya note ka text
+  createdAt DateTime     @default(now())
+
+  // Relation to Lead
+  leadId Int
+  lead   Lead @relation("LeadActivities", fields: [leadId], references: [id])
+
+  // Relation to User (who did it)
+  userId Int
+  user   User @relation("UserActivities", fields: [userId], references: [id])
+}
