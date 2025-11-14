@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { setCredentials } from "../features/auth/authSlice";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate, Navigate } from "react-router-dom";
+import { setCredentials, selectCurrentToken } from "../features/auth/authSlice";
 import axios from "axios";
 
 const Login = () => {
@@ -12,6 +12,8 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const token = useSelector(selectCurrentToken);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -38,6 +40,10 @@ const Login = () => {
 
     setIsLoading(false);
   };
+
+  if (token) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -133,6 +139,15 @@ const Login = () => {
             </button>
           </div>
         </form>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Don't have an account yet?{" "}
+          <Link
+            to="/register"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   );
