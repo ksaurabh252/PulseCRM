@@ -1,7 +1,10 @@
 import React from "react";
 import { GoSearch, GoBell } from "react-icons/go";
 import { HiMenuAlt2 } from "react-icons/hi";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
+import { logOut } from "../../features/auth/authSlice.js";
 /**
  * Navbar component for the top navigation bar.
  * Displays a hamburger menu, search bar, notification bell, and user profile.
@@ -10,6 +13,15 @@ import { HiMenuAlt2 } from "react-icons/hi";
  * @param {Function} props.toggleSidebar - Function to toggle the sidebar open/close state.
  */
 const Navbar = ({ toggleSidebar }) => {
+  // 3. Hooks ko initialize karein
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // 4. Logout function banayein
+  const handleLogout = () => {
+    dispatch(logOut()); // Redux state aur localStorage ko clear karega
+    navigate("/login"); // Login page par waapas bhej dega
+  };
   return (
     <header className="flex h-20 w-full items-center justify-between border-b border-gray-200 bg-white px-6">
       {/* Left section: Hamburger menu and search bar */}
@@ -58,6 +70,12 @@ const Navbar = ({ toggleSidebar }) => {
           <div>
             <div className="text-sm font-medium text-gray-900">Admin User</div>
             <div className="text-xs text-gray-500">Admin</div>
+            <button
+              onClick={handleLogout}
+              className="text-xs text-indigo-600 hover:text-indigo-800 focus:outline-none"
+            >
+              Log out
+            </button>
           </div>
         </div>
       </div>
