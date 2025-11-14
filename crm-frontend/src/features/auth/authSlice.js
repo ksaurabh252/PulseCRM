@@ -1,47 +1,62 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-let user = null;
-const userJSON = localStorage.getItem("user");
-
-// Check if data exists and is not the string "undefined"
-if (userJSON && userJSON !== "undefined") {
+// Helper function to safely parse user JSON from localStorage
+const getInitialUser = () => {
   try {
-    user = JSON.parse(userJSON); // Parse the user JSON string
+    const userJSON = localStorage.getItem("user");
+    // Check if data exists, is not the string "undefined", and is not "null"
+    if (userJSON && userJSON !== "undefined" && userJSON !== "null") {
+      return JSON.parse(userJSON); // Parse and return the user object
+    }
   } catch (e) {
     // If parsing fails, log the error and remove the corrupted data
     console.error("Failed to parse user from localStorage", e);
     localStorage.removeItem("user");
   }
-}
-const token = localStorage.getItem("token");
+  return null; // Return null if anything goes wrong
+};
 
-// 2. Set the initial state using data from localStorage (if available)
+// Helper function to safely get token from localStorage
+const getInitialToken = () => {
+  const token = localStorage.getItem("token");
+  // Check if token exists and is not the string "null" or "undefined"
+  if (token && token !== "null" && token !== "undefined") {
+    return token;
+  }
+  return null;
+};
+
+// Get initial user and token values from localStorage
+const user = getInitialUser();
+const token = getInitialToken();
+
+// Set the initial state using data from localStorage (if available)
 const initialState = {
   user: user,
   token: token ? token : null,
 };
 
-// 3. Create the auth slice using Redux Toolkit
+// Create the auth slice using Redux Toolkit
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // Action 1: When the user logs in, set credentials
+    // Action: When the user logs in, set credentials
     setCredentials: (state, action) => {
       const { user, token } = action.payload;
       state.user = user;
       state.token = token;
 
-      // 4. Save user and token to localStorage for persistence
+      // Save user and token to localStorage for persistence
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
     },
-    // Action 2: When the user logs out, clear credentials
+    // Action: When the user logs out, clear credentials
     logOut: (state) => {
       state.user = null;
       state.token = null;
 
-      // 5. Remove user and token from localStorage
+      // Remove user and token from localStorage
       localStorage.removeItem("user");
       localStorage.removeItem("token");
     },
@@ -51,7 +66,7 @@ const authSlice = createSlice({
 // Export the actions for use in components
 export const { setCredentials, logOut } = authSlice.actions;
 
-// Export the reducer to be used in the store
+// Export the reducer to be used in the Redux store
 export default authSlice.reducer;
 
 // Selector to get the current user from the state
