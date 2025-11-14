@@ -5,6 +5,7 @@ import { setCredentials, selectCurrentToken } from "../features/auth/authSlice";
 import axios from "axios";
 
 const Login = () => {
+  // State for form fields and UI feedback
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,14 +14,17 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Get token from Redux store to check if user is already logged in
   const token = useSelector(selectCurrentToken);
 
+  // Handle login form submission
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submit
     setIsLoading(true);
     setError("");
 
     try {
+      // Call backend login endpoint
       const response = await axios.post(
         "http://localhost:5001/api/auth/login",
         {
@@ -29,10 +33,13 @@ const Login = () => {
         }
       );
 
+      // Save user and token to Redux store
       dispatch(setCredentials(response.data));
 
+      // Redirect to dashboard after successful login
       navigate("/");
     } catch (err) {
+      // Show error message if login fails
       setError(
         err.response?.data?.message || "Login failed. Please try again."
       );
@@ -41,6 +48,7 @@ const Login = () => {
     setIsLoading(false);
   };
 
+  // If user is already logged in, redirect to dashboard
   if (token) {
     return <Navigate to="/" replace />;
   }
@@ -57,8 +65,10 @@ const Login = () => {
           </p>
         </div>
 
+        {/* Login form */}
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4 rounded-md shadow-sm">
+            {/* Email Field */}
             <div>
               <label htmlFor="email-address" className="sr-only">
                 Email address
@@ -75,6 +85,7 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+            {/* Password Field */}
             <div>
               <label htmlFor="password" className="sr-only">
                 Password
@@ -93,6 +104,7 @@ const Login = () => {
             </div>
           </div>
 
+          {/* Error message display */}
           {error && (
             <div className="rounded-md bg-red-50 p-4">
               <div className="flex">
@@ -103,6 +115,7 @@ const Login = () => {
             </div>
           )}
 
+          {/* Remember me and forgot password section */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input
@@ -129,6 +142,7 @@ const Login = () => {
             </div>
           </div>
 
+          {/* Submit button */}
           <div>
             <button
               type="submit"
@@ -139,6 +153,7 @@ const Login = () => {
             </button>
           </div>
         </form>
+        {/* Link to registration page */}
         <p className="mt-2 text-center text-sm text-gray-600">
           Don't have an account yet?{" "}
           <Link
