@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -9,6 +9,10 @@ import {
 } from "../features/leads/leadsSlice";
 import { GoArrowLeft } from "react-icons/go";
 import EditLeadForm from "../components/leads/EditLeadForm";
+import ActivityTimeline from "../components/leads/ActivityTimeline";
+import AddActivityForm from "../components/leads/AddActivityForm";
+import { fetchActivitiesForLead } from "../features/activity/activitySlice";
+import { clearActivities } from "../features/activity/activitySlice";
 
 const LeadDetail = () => {
   // Get the lead ID from the URL parameters
@@ -21,9 +25,11 @@ const LeadDetail = () => {
   // Fetch the lead data when the component mounts or the ID changes
   useEffect(() => {
     dispatch(fetchLeadById(id));
+    dispatch(fetchActivitiesForLead(id));
     // Clear the selected lead when the component unmounts
     return () => {
       dispatch(clearSelectedLead());
+      dispatch(clearActivities());
     };
   }, [id, dispatch]);
 
@@ -79,8 +85,8 @@ const LeadDetail = () => {
       <div className="mt-8">
         <h2 className="text-2xl font-bold">Activity Timeline</h2>
         <p className="mt-4 rounded-lg bg-white p-6 shadow-md">
-          (Activity timeline will go here...)
-          {/* This is a placeholder for the activity timeline component */}
+          <AddActivityForm leadId={id} />
+          <ActivityTimeline />
         </p>
       </div>
     </div>
