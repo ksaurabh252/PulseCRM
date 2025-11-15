@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL =
+  import.meta.env.VITE_API_URL || "https://pulse-crm-backend.onrender.com";
 // ==========================
 // Async Thunks for API Calls
 // ==========================
@@ -18,10 +19,7 @@ export const fetchLeads = createAsyncThunk(
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const response = await axios.get(
-        "https://pulsecrm.onrender.com/api/leads",
-        config
-      );
+      const response = await axios.get(`${API_URL}/api/leads`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
