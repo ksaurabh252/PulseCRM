@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Leads from "./pages/Leads.jsx";
 import LeadDetail from "./pages/LeadDetail.jsx";
 import Register from "./pages/Register.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   return (
@@ -20,7 +21,15 @@ function App() {
 
         {/* Route 2: Main App (inside AppLayout) */}
         {/* This is the "parent" route using AppLayout */}
-        <Route path="/" element={<AppLayout />}>
+
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
           {/* Nested routes will render inside <Outlet /> in AppLayout */}
 
           {/* Default dashboard page ("/") */}

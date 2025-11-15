@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { selectCurrentToken } from "../../features/auth/authSlice.js";
+import { selectCurrentToken } from "../features/auth/authSlice";
 
 // ProtectedRoute component to restrict access to authenticated users only
 const ProtectedRoute = ({ children }) => {

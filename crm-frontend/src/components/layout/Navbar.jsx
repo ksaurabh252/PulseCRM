@@ -1,4 +1,3 @@
-import React from "react";
 import { GoSearch, GoBell } from "react-icons/go";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
@@ -12,25 +11,27 @@ import { logOut, selectCurrentUser } from "../../features/auth/authSlice.js";
  * @param {Function} props.toggleSidebar - Function to toggle the sidebar open/close state.
  */
 const Navbar = ({ toggleSidebar }) => {
-  // 3. Hooks ko initialize karein
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
 
-  // 4. Logout function banayein
+  // 4. Logout function
   const handleLogout = () => {
-    dispatch(logOut()); // Redux state aur localStorage ko clear karega
-    navigate("/login"); // Login page par waapas bhej dega
+    dispatch(logOut());
+    navigate("/login");
   };
 
   const getInitials = (name) => {
-    if (!name) return "AU";
+    if (!name || name === "User") return "U";
     const names = name.split(" ");
     if (names.length === 1) return names[0].substring(0, 2).toUpperCase();
     return (names[0][0] + names[names.length - 1][0]).toUpperCase();
   };
-  const userName = user ? user.name : "Admin User";
-  const userRole = user ? user.role : "Admin";
+
+  const userName = user ? user.name : "User";
+  const userRole = user ? user.role : "Role";
+
+  const initials = getInitials(userName);
 
   return (
     <header className="flex h-20 w-full items-center justify-between border-b border-gray-200 bg-white px-4">
@@ -76,11 +77,13 @@ const Navbar = ({ toggleSidebar }) => {
             className="h-10 w-10 rounded-full object-cover"
             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
               userName
-            )}&background=indigo&color=fff&initials=${getInitials(userName)}`}
+            )}&background=indigo&color=fff&=${initials}`}
             alt="User Avatar"
           />
           <div className="hidden sm:block">
             <div className="text-sm font-medium text-gray-900">{userName}</div>
+
+            <div className="text-xs text-gray-500">{userRole}</div>
 
             <button
               onClick={handleLogout}
