@@ -1,9 +1,49 @@
 import StatCard from "../components/dashboard/StatCard";
 import LeadsByStatusChart from "../components/dashboard/LeadsByStatusChart";
 import { GoDatabase, GoPersonAdd, GoCheck, GoGraph } from "react-icons/go";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchLeads,
+  selectAllLeads,
+  selectLeadsStatus,
+} from "../features/leads/leadsSlice";
+import { useEffect } from "react";
 
 // Dashboard component displays the main CRM dashboard
 const Dashboard = () => {
+  const leads = useSelector(selectAllLeads);
+  const leadsStatus = useSelector(selectLeadsStatus);
+  const dispatch = useDispatch();
+
+  // Fetch leads on component mount if not already loaded
+  useEffect(() => {
+    if (leadsStatus === "idle") {
+      dispatch(fetchLeads());
+    }
+  }, [leadsStatus, dispatch]);
+
+  // Calculate dashboard statistics
+  const stats = {
+    total: leads.length,
+    new: leads.filter((l) => l.status === "NEW").length,
+    won: leads.filter((l) => l.status === "WON").length,
+    conversionRate:
+      leads.length > 0
+        ? (
+            (leads.filter((l) => l.status === "WON").length / leads.length) *
+            100
+          ).toFixed(1)
+        : 0,
+  };
+
+  //  Loading state
+  if (leadsStatus === "loading") {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-lg text-gray-600">Loading dashboard...</p>
+      </div>
+    );
+  }
   return (
     <div>
       {/* Page Title */}
@@ -15,28 +55,28 @@ const Dashboard = () => {
         {/* StatCard for total leads */}
         <StatCard
           title="Total Leads"
-          value="128"
+          value={stats.total}
           icon={<GoDatabase className="h-6 w-6 text-white" />}
           bgColor="bg-indigo-600"
         />
         {/* StatCard for new leads this month */}
         <StatCard
           title="New Leads (Month)"
-          value="42"
+          value={stats.new}
           icon={<GoPersonAdd className="h-6 w-6 text-white" />}
           bgColor="bg-blue-500"
         />
         {/* StatCard for deals won */}
         <StatCard
           title="Deals Won"
-          value="12"
+          value={stats.won}
           icon={<GoCheck className="h-6 w-6 text-white" />}
           bgColor="bg-green-500"
         />
         {/* StatCard for conversion rate */}
         <StatCard
           title="Conversion Rate"
-          value="9.4%"
+          value={`${stats.conversionRate}%`}
           icon={<GoGraph className="h-6 w-6 text-white" />}
           bgColor="bg-orange-500"
         />
