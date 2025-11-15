@@ -7,6 +7,7 @@ const {
   createLead,
   getLeadById,
   updateLead,
+  deleteLead,
 } = require("../controllers/leadController");
 
 // Import authentication middleware to protect routes
@@ -28,6 +29,7 @@ router
 router
   .route("/:id")
   .get(protect, getLeadById) // Get single lead (protected)
-  .put(protect, updateLead); // Update lead (protected)
+  .put(protect, updateLead) // Update lead (protected)
+  .delete(protect, deleteLead); //Delete Lead
 
 module.exports = router;
