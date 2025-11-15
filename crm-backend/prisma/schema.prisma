@@ -5,6 +5,7 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL") // Yeh .env file se URL lega
+  // directUrl = env("DIRECT_URL")
 }
 
 // 2. Prisma client generator
