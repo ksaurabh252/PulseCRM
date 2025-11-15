@@ -27,7 +27,7 @@ const app = express();
 // ===========================
 
 // Enable CORS for all incoming requests (so your frontend can communicate with the API)
-app.use(cors());
+app.use(cors({ origin: "https://pulse-crm-tau.vercel.app/leads" }));
 
 // Enable built-in Express middleware to parse JSON request bodies
 // This allows us to use req.body directly when handling JSON data
