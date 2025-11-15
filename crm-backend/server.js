@@ -22,10 +22,6 @@ dotenv.config();
 // Create an instance of the Express app (the core of our server)
 const app = express();
 
-const allowed = [
-  "http://localhost:5173", // dev Vite origin (example)
-  "https://pulse-crm-tau.vercel.app",
-];
 // ===========================
 // Middleware Setup
 // ===========================
@@ -33,15 +29,19 @@ const allowed = [
 // Enable CORS for all incoming requests (so your frontend can communicate with the API)
 app.use(
   cors({
-    origin: function (origin, cb) {
-      // allow requests with no origin (mobile apps, curl) by returning true
-      if (!origin) return cb(null, true);
-      if (allowed.indexOf(origin) !== -1) cb(null, true);
-      else cb(new Error("Not allowed by CORS"));
-    },
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174", // backup local port
+      "https://pulse-crm-tau.vercel.app",
+    ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Handle preflight requests
+app.options("*", cors());
 
 // Enable built-in Express middleware to parse JSON request bodies
 // This allows us to use req.body directly when handling JSON data
@@ -71,7 +71,12 @@ app.use("/api/activities", activityRoutes); // All activity-related routes start
 
 // A simple root route to verify that the API is up and running
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the Next-Gen CRM API" });
+  res.json({ message: "Welcome to the Next-Gen CRM API", status: "running" });
+});
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", timestamp: new Date() });
 });
 
 // ===========================
