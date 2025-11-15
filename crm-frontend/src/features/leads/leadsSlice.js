@@ -18,7 +18,7 @@ export const fetchLeads = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       };
       const response = await axios.get(
-        "http://localhost:5001/api/leads",
+        "https://pulsecrm.onrender.com/api/leads",
         config
       );
       return response.data;

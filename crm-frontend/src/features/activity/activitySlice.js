@@ -18,7 +18,7 @@ export const fetchActivitiesForLead = createAsyncThunk(
       const config = { headers: { Authorization: `Bearer ${token}` } };
       // Make GET request to fetch activities for the given lead
       const response = await axios.get(
-        `http://localhost:5001/api/activities/${leadId}`,
+        `https://pulsecrm.onrender.com/api/activities/${leadId}`,
         config
       );
       return response.data;

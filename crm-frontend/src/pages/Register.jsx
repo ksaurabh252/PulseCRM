@@ -28,7 +28,7 @@ const Register = () => {
     try {
       // NEW: Call backend register endpoint
       const response = await axios.post(
-        "http://localhost:5001/api/auth/register",
+        "https://pulsecrm.onrender.com/api/auth/register",
         {
           name,
           email,

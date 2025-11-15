@@ -26,7 +26,7 @@ const Login = () => {
     try {
       // Call backend login endpoint
       const response = await axios.post(
-        "http://localhost:5001/api/auth/login",
+        "https://pulsecrm.onrender.com/api/auth/login",
         {
           email,
           password,
