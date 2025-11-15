@@ -132,3 +132,47 @@ exports.updateLead = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
+exports.deleteLead = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const leadId = parseInt(id);
+
+    // 1. Check if lead exists
+    const leadExists = await prisma.lead.findUnique({
+      where: { id: leadId },
+    });
+
+    if (!leadExists) {
+      return res.status(404).json({ message: "Lead not found" });
+    }
+
+    // 2. Use a transaction to delete all related activities AND the lead
+    // This ensures that if one part fails, the whole operation is rolled back.
+    const deleteResult = await prisma.$transaction([
+      // First, delete all activities related to this lead
+      prisma.activity.deleteMany({
+        where: { leadId: leadId },
+      }),
+      // Then, delete the lead itself
+      prisma.lead.delete({
+        where: { id: leadId },
+      }),
+    ]);
+
+    // deleteResult[1] will contain the deleted lead info
+    console.log(`Lead ${deleteResult[1].name} and its activities deleted.`);
+
+    res.status(200).json({ message: "Lead deleted successfully", id: leadId }); // Send back the ID
+  } catch (error) {
+    console.error("--- DELETE LEAD ERROR ---", error);
+
+    // Check for specific Prisma error if a record to delete is not found
+    if (error.code === "P2025") {
+      return res
+        .status(404)
+        .json({ message: "Lead or its dependencies not found for deletion." });
+    }
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
