@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BarChart,
   Bar,
@@ -9,18 +8,31 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
-// Dummy data for the chart (replace with real data as needed)
-const data = [
-  { name: "New", count: 42 },
-  { name: "Contacted", count: 35 },
-  { name: "Qualified", count: 28 },
-  { name: "Proposal", count: 19 },
-  { name: "Won", count: 12 },
-];
+import { selectAllLeads } from "../../features/leads/leadsSlice";
+import { useSelector } from "react-redux";
 
 // Functional component to display leads by status in a bar chart
 const LeadsByStatusChart = () => {
+  // Get all leads from Redux store
+  const leads = useSelector(selectAllLeads);
+
+  // Prepare chart data by counting leads for each status
+  const data = [
+    { name: "New", count: leads.filter((l) => l.status === "NEW").length },
+    {
+      name: "Contacted",
+      count: leads.filter((l) => l.status === "CONTACTED").length,
+    },
+    {
+      name: "Qualified",
+      count: leads.filter((l) => l.status === "QUALIFIED").length,
+    },
+    {
+      name: "Proposal",
+      count: leads.filter((l) => l.status === "PROPOSAL").length,
+    },
+    { name: "Won", count: leads.filter((l) => l.status === "WON").length },
+  ];
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">
       {/* Chart title */}
