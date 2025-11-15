@@ -33,7 +33,7 @@ const protect = async (req, res, next) => {
 
   // If no token is found in the header, send a 401 Unauthorized response
   if (!token) {
-    res.status(401).json({ message: "Not authorized, no token" });
+    return res.status(401).json({ message: "Not authorized, no token" });
   }
 };
 
