@@ -15,10 +15,13 @@ exports.registerUser = async (req, res) => {
     // Extract user details from the request body
     const { email, password, name, role } = req.body;
 
+    console.log("📝 Registration attempt:", { email, name, role });
+
     // Check if a user with the same email already exists
     const userExists = await prisma.user.findUnique({ where: { email } });
     if (userExists) {
       // If user exists, return an error
+      console.log("User already exists:", email);
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -32,10 +35,11 @@ exports.registerUser = async (req, res) => {
         email,
         password: hashedPassword,
         name,
-        role, // This can be 'ADMIN', 'MANAGER', or 'SALES_EXECUTIVE'
+        role: role || "SALES_EXECUTIVE", // This can be 'ADMIN', 'MANAGER', or 'SALES_EXECUTIVE'
       },
     });
 
+    console.log("User create successfuly", user.email);
     // Respond with the new user's details and a JWT token
     res.status(201).json({
       id: user.id,
@@ -46,7 +50,12 @@ exports.registerUser = async (req, res) => {
     });
   } catch (error) {
     // Handle any server errors
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error("❌ Registration error:", error);
+    res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
 
@@ -56,11 +65,14 @@ exports.loginUser = async (req, res) => {
     // Extract email and password from the request body
     const { email, password } = req.body;
 
+    console.log("Login attempt:", email);
+
     // Find the user by email
     const user = await prisma.user.findUnique({ where: { email } });
 
     // If user exists and password matches
     if (user && (await bcrypt.compare(password, user.password))) {
+      console.log("Login successful:", email);
       // Respond with user details and a JWT token
       res.status(200).json({
         id: user.id,
@@ -71,10 +83,12 @@ exports.loginUser = async (req, res) => {
       });
     } else {
       // If user not found or password is incorrect
+      console.log("Invalid credentials:", email);
       res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (error) {
     // Handle any server errors
+    console.error("Login error:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
