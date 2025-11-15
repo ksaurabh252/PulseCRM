@@ -41,7 +41,7 @@ export const createLead = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       };
       const response = await axios.post(
-        "http://localhost:5001/api/leads",
+        "https://pulsecrm.onrender.com/api/leads",
         leadData,
         config
       );
@@ -65,7 +65,7 @@ export const fetchLeadById = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       };
       const response = await axios.get(
-        `http://localhost:5001/api/leads/${leadId}`,
+        `https://pulsecrm.onrender.com/api/leads/${leadId}`,
         config
       );
       return response.data;
@@ -88,7 +88,7 @@ export const updateLead = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       };
       const response = await axios.put(
-        `http://localhost:5001/api/leads/${id}`,
+        `https://pulsecrm.onrender.com/api/leads/${id}`,
         leadData,
         config
       );

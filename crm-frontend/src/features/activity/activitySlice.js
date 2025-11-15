@@ -42,7 +42,7 @@ export const createActivity = createAsyncThunk(
       const config = { headers: { Authorization: `Bearer ${token}` } };
       // Make POST request to create a new activity
       const response = await axios.post(
-        "http://localhost:5001/api/activities",
+        "https://pulsecrm.onrender.com/api/activities",
         activityData,
         config
       );
