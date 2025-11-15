@@ -22,12 +22,26 @@ dotenv.config();
 // Create an instance of the Express app (the core of our server)
 const app = express();
 
+const allowed = [
+  "http://localhost:5173", // dev Vite origin (example)
+  "https://pulse-crm-tau.vercel.app",
+];
 // ===========================
 // Middleware Setup
 // ===========================
 
 // Enable CORS for all incoming requests (so your frontend can communicate with the API)
-app.use(cors({ origin: "https://pulse-crm-tau.vercel.app/leads" }));
+app.use(
+  cors({
+    origin: function (origin, cb) {
+      // allow requests with no origin (mobile apps, curl) by returning true
+      if (!origin) return cb(null, true);
+      if (allowed.indexOf(origin) !== -1) cb(null, true);
+      else cb(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 // Enable built-in Express middleware to parse JSON request bodies
 // This allows us to use req.body directly when handling JSON data
