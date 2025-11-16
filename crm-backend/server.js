@@ -3,10 +3,10 @@
 // ===========================
 
 const express = require("express");
-
 const dotenv = require("dotenv");
-
 const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io"); // Socket.IO for real-time communication
 
 // ===========================
 // Environment Configuration
@@ -22,23 +22,44 @@ dotenv.config();
 // Create an instance of the Express app (the core of our server)
 const app = express();
 
+// Create HTTP server from Express app (required for Socket.IO)
+const server = http.createServer(app);
+
 // ===========================
 // Middleware Setup
 // ===========================
 
-// Enable CORS for all incoming requests (so your frontend can communicate with the API)
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174", // backup local port
-      "https://pulse-crm-tau.vercel.app",
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// Configure CORS to allow requests from frontend domains
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174", // backup local port
+    "https://pulse-crm-tau.vercel.app",
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
+// Initialize Socket.IO with CORS configuration
+const io = new Server(server, { cors: corsOptions });
+
+// Attach Socket.IO instance to all requests for easy access in routes
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
+// Socket.IO connection handler for real-time events
+io.on("connection", (socket) => {
+  console.log(`🔌 New client connected: ${socket.id}`);
+
+  socket.on("disconnect", () => {
+    console.log(`❌ Client disconnected: ${socket.id}`);
+  });
+});
 
 // Enable built-in Express middleware to parse JSON request bodies
 // This allows us to use req.body directly when handling JSON data
@@ -71,17 +92,17 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to the Next-Gen CRM API", status: "running" });
 });
 
-// Health check endpoint
+// Health check endpoint for monitoring and deployment services
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK", timestamp: new Date() });
 });
 
-// 404 handler
+// 404 handler for undefined routes
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// Error handler
+// Global error handler middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res
@@ -96,7 +117,7 @@ app.use((err, req, res, next) => {
 // Get the port number from environment variables, or use 5001 as the default
 const PORT = process.env.PORT || 5001;
 
-// Start the server and log a nice message in the console
-app.listen(PORT, () => {
+// Start the HTTP server (with Socket.IO attached) and log confirmation
+server.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
