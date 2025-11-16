@@ -56,6 +56,22 @@ exports.createActivity = async (req, res) => {
       },
     });
 
+    // ===========================
+    // Real-time Socket.IO Events
+    // ===========================
+
+    // Emit 'new_activity' event to all connected clients with activity data
+    req.io.emit("new_activity", newActivity);
+
+    // Emit 'notification' event to show toast/alert on frontend
+    req.io.emit("notification", {
+      title: `New ${type.toLowerCase()} added`,
+      message: `By ${newActivity.user.name} on lead (ID: ${leadId})`,
+      timestamp: new Date(),
+    });
+
+    console.log(`[Socket.io] Emitted 'new_activity' for Lead ID: ${leadId}`);
+
     // Send the newly created activity as a JSON response
     res.status(201).json(newActivity);
   } catch (error) {
