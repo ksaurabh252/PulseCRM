@@ -2,6 +2,10 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectCurrentToken } from "../../features/auth/authSlice";
+import socket from "../../socket";
+import { useEffect } from "react";
 
 /**
  * AppLayout component defines the main structure of the application.
@@ -11,12 +15,28 @@ const AppLayout = () => {
   // State to control whether the sidebar is open or collapsed
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  const token = useSelector(selectCurrentToken);
   /**
    * Toggles the sidebar open/collapsed state.
    */
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  useEffect(() => {
+    if (token) {
+      // If we have a token, connect the socket
+      socket.connect();
+      console.log("[Socket.io] Connecting...");
+    }
+
+    // Disconnect the socket when the component unmounts
+    // (e.g., when the user logs out and leaves the AppLayout)
+    return () => {
+      socket.disconnect();
+      console.log("[Socket.io] Disconnecting...");
+    };
+  }, [token]);
 
   return (
     <div className="flex h-screen bg-gray-100">
