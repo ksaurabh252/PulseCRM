@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchLeadById,
   selectSelectedLead,
   selectLeadsStatus,
   clearSelectedLead,
+  deleteLead,
 } from "../features/leads/leadsSlice";
 import { GoArrowLeft } from "react-icons/go";
 import EditLeadForm from "../components/leads/EditLeadForm";
@@ -18,6 +19,7 @@ const LeadDetail = () => {
   // Get the lead ID from the URL parameters
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // Get the selected lead and status from Redux store
   const lead = useSelector(selectSelectedLead);
   const status = useSelector(selectLeadsStatus);
@@ -33,6 +35,22 @@ const LeadDetail = () => {
     };
   }, [id, dispatch]);
 
+  const handleDelete = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this lead? This action cannot be undone."
+      )
+    ) {
+      try {
+        await dispatch(deleteLead(id)).unwrap(); // .unwrap() will throw an error if rejected
+        // After successful deletion, navigate back to the leads list
+        navigate("/leads");
+      } catch (err) {
+        console.error("Failed to delete the lead:", err);
+        alert(`Error: ${err.message || "Failed to delete lead."}`);
+      }
+    }
+  };
   // Show loading state if data is being fetched
   if (status === "loading" && !lead) {
     return (
@@ -69,25 +87,34 @@ const LeadDetail = () => {
   // 2. Render the lead data and edit form
   return (
     <div className="space-y-8">
-      {/* Back button to go to all leads */}
-      <Link
-        to="/leads"
-        className="mb-4 inline-flex items-center text-indigo-600 hover:text-indigo-800"
-      >
-        <GoArrowLeft className="mr-2" />
-        Back to all leads
-      </Link>
+      {/* --- MODIFIED SECTION --- */}
+      {/* Container for Back link and Delete button */}
+      <div className="flex justify-between items-center mb-4">
+        <Link
+          to="/leads"
+          className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
+        >
+          <GoArrowLeft className="mr-2" />
+          Back to all leads
+        </Link>
 
-      {/* 3. Render the new edit form here, passing the lead as a prop */}
+        <button
+          onClick={handleDelete}
+          className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        >
+          Delete Lead
+        </button>
+      </div>
+
       <EditLeadForm lead={lead} />
 
-      {/* Activity Timeline section (placeholder for future feature) */}
+      {/* Activity Timeline section */}
       <div className="mt-8">
         <h2 className="text-2xl font-bold">Activity Timeline</h2>
-        <p className="mt-4 rounded-lg bg-white p-6 shadow-md">
+        <div className="mt-4 rounded-lg bg-white p-6 shadow-md">
           <AddActivityForm leadId={id} />
           <ActivityTimeline />
-        </p>
+        </div>
       </div>
     </div>
   );
