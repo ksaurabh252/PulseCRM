@@ -5,6 +5,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
 import leadsReducer from "../features/leads/leadsSlice";
 import activityReducer from "../features/activity/activitySlice";
+import userReducer from "../features/user/userSlice";
 
 // Configure and create the Redux store
 // Combine all reducers into a single root reducer
@@ -16,5 +17,8 @@ export const store = configureStore({
     leads: leadsReducer,
     // Activity slice manages activities related to leads
     activity: activityReducer,
+
+    // User slice manages user data for the admin panel
+    user: userReducer,
   },
 });
