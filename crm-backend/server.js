@@ -9,6 +9,15 @@ const http = require("http");
 const { Server } = require("socket.io"); // Socket.IO for real-time communication
 
 // ===========================
+// Routes Import
+// ===========================
+
+// Import route modules – each file handles a specific set of related endpoints
+const authRoutes = require("./src/routes/authRoutes"); // Authentication routes (login, register, etc.)
+const leadRoutes = require("./src/routes/leadRoutes"); // Lead management routes
+const activityRoutes = require("./src/routes/activityRoutes"); // Activity tracking routes
+
+// ===========================
 // Environment Configuration
 // ===========================
 
@@ -66,15 +75,6 @@ io.on("connection", (socket) => {
 app.use(express.json());
 
 // ===========================
-// Routes Import
-// ===========================
-
-// Import route modules – each file handles a specific set of related endpoints
-const authRoutes = require("./src/routes/authRoutes"); // Authentication routes (login, register, etc.)
-const leadRoutes = require("./src/routes/leadRoutes"); // Lead management routes
-const activityRoutes = require("./src/routes/activityRoutes"); // Activity tracking routes
-
-// ===========================
 // Routes Registration
 // ===========================
 
@@ -82,6 +82,8 @@ const activityRoutes = require("./src/routes/activityRoutes"); // Activity track
 app.use("/api/auth", authRoutes); // All auth-related routes start with /api/auth
 app.use("/api/leads", leadRoutes); // All lead-related routes start with /api/leads
 app.use("/api/activities", activityRoutes); // All activity-related routes start with /api/activities
+
+app.use("/api/users", userRoutes);
 
 // ===========================
 // Health Check / Root Route
