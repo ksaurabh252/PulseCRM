@@ -1,6 +1,7 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
 import { GoHome, GoDatabase, GoGear, GoOrganization } from "react-icons/go";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../features/auth/authSlice";
 /**
  * Sidebar component for navigation.
  * Displays navigation links and adapts its width and content based on the sidebar's open/closed state.
@@ -9,6 +10,7 @@ import { GoHome, GoDatabase, GoGear, GoOrganization } from "react-icons/go";
  * @param {boolean} props.isSidebarOpen - Determines if the sidebar is expanded or collapsed.
  */
 const Sidebar = ({ isSidebarOpen }) => {
+  const currentUser = useSelector(selectCurrentUser);
   // Common classes for all navigation links
   const commonClasses =
     "flex items-center w-full px-4 py-3 text-gray-300 transition-colors duration-200 transform rounded-md";
@@ -66,16 +68,22 @@ const Sidebar = ({ isSidebarOpen }) => {
           <span className={textClasses}>Leads</span>
         </NavLink>
 
-        {/* User Management link */}
-        <NavLink
-          to="/users"
-          className={({ isActive }) =>
-            `${commonClasses} ${isActive ? activeClasses : inactiveClasses}`
-          }
-        >
-          <GoOrganization className="h-6 w-6 flex-shrink-0" />
-          <span className={textClasses}>User Management</span>
-        </NavLink>
+        {/*
+            User Management link 
+            Only visible to users with the ADMIN or MANAGER role.
+        */}
+        {currentUser &&
+          (currentUser.role === "ADMIN" || currentUser.role === "MANAGER") && (
+            <NavLink
+              to="/users"
+              className={({ isActive }) =>
+                `${commonClasses} ${isActive ? activeClasses : inactiveClasses}`
+              }
+            >
+              <GoOrganization className="h-6 w-6 flex-shrink-0" />
+              <span className={textClasses}>User Management</span>
+            </NavLink>
+          )}
 
         {/* Settings link */}
         <NavLink
