@@ -98,6 +98,26 @@ export const updateLead = createAsyncThunk(
   }
 );
 
+// 6. DELETE A LEAD
+export const deleteLead = createAsyncThunk(
+  "leads/deleteLead",
+  async (leadId, { getState, rejectWithValue }) => {
+    try {
+      const { token } = getState().auth;
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+      // We send back the ID from the API, so response.data will be { message: "...", id: 123 }
+      const response = await axios.delete(
+        `${API_URL}/leads/${leadId}`, // Make sure API_URL is defined (e.g., from import.meta.env.VITE_API_URL)
+        config
+      );
+      return response.data; // This will return { message: "...", id: leadId }
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 // ==========================
 // Initial State
 // ==========================
@@ -185,6 +205,30 @@ const leadsSlice = createSlice({
         state.error = action.payload
           ? action.payload.message
           : action.error.message;
+      })
+
+      /**
+       * Delete a lead by its ID.
+       * @param {string|number} leadId - The ID of the lead to delete.
+       */
+      .addCase(deleteLead.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteLead.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const deletedId = parseInt(action.payload.id);
+
+        // Remove the deleted lead from the 'leads' array
+        state.leads = state.leads.filter((lead) => lead.id !== deletedId);
+
+        // If the deleted lead was the 'selectedLead', clear it
+        if (state.selectedLead && state.selectedLead.id === deletedId) {
+          state.selectedLead = null;
+        }
+      })
+      .addCase(deleteLead.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload.message;
       });
   },
 });
