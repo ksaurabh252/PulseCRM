@@ -7,6 +7,7 @@ import Leads from "./pages/Leads.jsx";
 import LeadDetail from "./pages/LeadDetail.jsx";
 import Register from "./pages/Register.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import UserManagement from "./pages/UserManagement.jsx";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="leads/:id" element={<LeadDetail />} />
         </Route>
 
+        <Route path="users" element={<UserManagement />}></Route>
         {/* 404 Not Found page for unmatched routes */}
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
