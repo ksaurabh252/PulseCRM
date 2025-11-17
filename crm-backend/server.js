@@ -17,6 +17,7 @@ const authRoutes = require("./src/routes/authRoutes"); // Authentication routes 
 const leadRoutes = require("./src/routes/leadRoutes"); // Lead management routes
 const activityRoutes = require("./src/routes/activityRoutes"); // Activity tracking routes
 
+const userRoutes = require("./src/routes/userRoutes");
 // ===========================
 // Environment Configuration
 // ===========================
