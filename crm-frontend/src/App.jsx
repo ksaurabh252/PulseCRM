@@ -8,6 +8,7 @@ import LeadDetail from "./pages/LeadDetail.jsx";
 import Register from "./pages/Register.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import UserManagement from "./pages/UserManagement.jsx";
+import Settings from "./pages/Settings.jsx";
 
 function App() {
   return (
@@ -41,9 +42,12 @@ function App() {
 
           {/* Dynamic route for lead details (e.g., /leads/123) */}
           <Route path="leads/:id" element={<LeadDetail />} />
+
+          <Route path="users" element={<UserManagement />}></Route>
+
+          <Route path="settings" element={<Settings />}></Route>
         </Route>
 
-        <Route path="users" element={<UserManagement />}></Route>
         {/* 404 Not Found page for unmatched routes */}
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
