@@ -1,4 +1,5 @@
 const prisma = require("../config/db");
+const { sendLeadStatusUpdateEmail } = require("../utils/emailUtils");
 
 /**
  * Get all leads from the database.
@@ -103,6 +104,7 @@ exports.updateLead = async (req, res) => {
     // Check if the lead exists
     const leadExists = await prisma.lead.findUnique({
       where: { id: parseInt(id) },
+      include: { owner: true },
     });
 
     if (!leadExists) {
@@ -125,6 +127,12 @@ exports.updateLead = async (req, res) => {
         },
       },
     });
+
+    //Automated Email Trigger logic
+    if (leadExists.status !== "Won" && updatedLead.status === "Won") {
+      // Send email only if the status has just changed to 'WON'
+      await sendLeadStatusUpdateEmail(updatedLead.owner.email, updatedLead);
+    }
 
     res.status(200).json(updatedLead);
   } catch (error) {
