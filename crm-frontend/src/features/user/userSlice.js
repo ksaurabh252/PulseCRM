@@ -14,7 +14,7 @@ export const fetchUsers = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       };
       // Make a GET request to fetch users
-      const response = await axios.get(`${API_URL}/users`, config);
+      const response = await axios.get(`${API_URL}/api/users`, config);
       return response.data;
     } catch (error) {
       // If there's an error, return the error message
@@ -35,7 +35,7 @@ export const resetUserPassword = createAsyncThunk(
       };
       // Make a POST request to reset the user's password (no body needed)
       const response = await axios.post(
-        `${API_URL}/users/${userId}/reset-password`,
+        `${API_URL}/api/users/${userId}/reset-password`,
         {}, // Empty body
         config
       );
