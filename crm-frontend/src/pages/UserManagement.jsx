@@ -148,7 +148,7 @@ const UserManagement = () => {
                   <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                     <button
                       onClick={() => handleResetPassword(user.id)}
-                      className="flex items-center rounded-md bg-red-600 px-3 py-1 text-sm text-white shadow-sm hover:bg-red-700"
+                      className="flex items-center rounded-md bg-red-600 px-3 py-1 text-sm cursor-pointer text-white shadow-sm hover:bg-red-700"
                       // Disable the button if the user tries to reset their own password
                       disabled={user.id === currentUser.id}
                     >
